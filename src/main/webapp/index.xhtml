@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+    <title>Academy Home</title>
+</h:head>
+<h:body>
+
+    <h:panelGroup>
+        <!-- pentru cei ne-autentificați -->
+        <h:panelGroup rendered="#{not loginBean.loggedIn}">
+            <h:link value="Login" outcome="login"/>
+            <h:outputText value=" | "/>
+            <h:link value="Register" outcome="register"/>
+        </h:panelGroup>
+
+        <!-- pentru cei autentificați -->
+        <h:panelGroup rendered="#{loginBean.loggedIn}">
+            <!-- mesaj și logout -->
+            <h:outputText value="Bun venit, #{loginBean.user.username}! "/>
+
+            <h:form prependId="false" style="display:inline">
+                <h:commandLink value="Logout" action="#{loginBean.logout}">
+                    <f:ajax execute="@this" render="@all"/>
+                </h:commandLink>
+            </h:form>
+
+            <!-- separator înainte de link-urile protejate -->
+            <h:outputText value=" | "/>
+
+            <!-- paginile protejate -->
+            <h:link value="Students"    outcome="students"/>
+            <h:outputText value=" | "/>
+            <h:link value="Courses"     outcome="courses"/>
+            <h:outputText value=" | "/>
+            <h:link value="Enrollments" outcome="enrollments"/>
+        </h:panelGroup>
+    </h:panelGroup>
+
+</h:body>
+</html>

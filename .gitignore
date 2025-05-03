@@ -1,0 +1,18 @@
+# Maven
+/target/
+/pom.xml.tag
+/pom.xml.releaseBackup
+/logs/
+/release.properties
+
+# IntelliJ
+.idea/
+/*.iml
+
+# Eclipse
+.metadata/
+/bin/
+/tmp/
+
+# Mac
+.DS_Store

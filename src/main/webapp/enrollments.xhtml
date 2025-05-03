@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+<h:head><title>Înscrieri</title></h:head>
+<h:body>
+    <h:form>
+        <h3>Înscriere student → curs</h3>
+        <h:selectOneMenu value="#{enrollmentBean.selectedStudentId}">
+            <f:selectItem itemLabel="-- selectează student --" itemValue="" />
+            <f:selectItems value="#{enrollmentBean.students}" var="s"
+                           itemValue="#{s.id}" itemLabel="#{s.name}" />
+        </h:selectOneMenu>
+        <h:selectOneMenu value="#{enrollmentBean.selectedCourseId}">
+            <f:selectItem itemLabel="-- selectează curs --" itemValue="" />
+            <f:selectItems value="#{enrollmentBean.courses}" var="c"
+                           itemValue="#{c.id}" itemLabel="#{c.title}" />
+        </h:selectOneMenu>
+        <h:commandButton value="Înscrie" action="#{enrollmentBean.enroll}" />
+    </h:form>
+
+    <h:dataTable value="#{enrollmentBean.enrollments}" var="e">
+        <h:column><f:facet name="header">Student</f:facet>#{e.student.name}</h:column>
+        <h:column><f:facet name="header">Curs</f:facet>#{e.course.title}</h:column>
+        <h:column>
+            <f:facet name="header">Actions</f:facet>
+            <h:commandButton value="Delete"
+                             action="#{enrollmentBean.delete(enrollment)}">
+                <f:ajax render="@form"/>
+            </h:commandButton>
+        </h:column>
+    </h:dataTable>
+</h:body>
+</html>
