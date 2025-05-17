@@ -12,22 +12,31 @@
         <h:outputText value=" | "/>
         <h:link outcome="enrollments" value="Enrollments"/>
     </h:panelGroup>
-    <h:form>
+    <h:form id="courseForm">
         <h3>Adaugă curs</h3>
         <h:inputText value="#{courseBean.course.title}" />
         <h:commandButton value="Creează" action="#{courseBean.create}" />
     </h:form>
 
-    <h:dataTable value="#{courseBean.courses}" var="c">
-        <h:column><f:facet name="header">ID</f:facet>#{c.id}</h:column>
-        <h:column><f:facet name="header">Titlu</f:facet>#{c.title}</h:column>
-        <h:column>
-            <f:facet name="header">Actions</f:facet>
-            <h:commandButton value="Delete"
-                             action="#{courseBean.delete(course)}">
-                <f:ajax render="@form"/>
-            </h:commandButton>
-        </h:column>
-    </h:dataTable>
+    <h:form id="listCourses">
+        <h:dataTable value="#{courseBean.courses}" var="c" border="1">
+            <h:column>
+                <f:facet name="header">ID</f:facet>
+                #{c.id}
+            </h:column>
+            <h:column>
+                <f:facet name="header">Titlu</f:facet>
+                #{c.title}
+            </h:column>
+            <h:column>
+                <f:facet name="header">Acțiuni</f:facet>
+                <h:commandButton value="Șterge"
+                                 action="#{courseBean.delete(c.id)}"
+                                 onclick="if (!confirm('Sigur vrei să ștergi acest curs?')) return false;">
+                    <f:ajax render="@form"/>
+                </h:commandButton>
+            </h:column>
+        </h:dataTable>
+    </h:form>
 </h:body>
 </html>

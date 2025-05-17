@@ -5,31 +5,56 @@
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 <h:head><title>Înscrieri</title></h:head>
 <h:body>
-    <h:form>
+    <h:panelGroup style="margin-bottom:1em">
+        <h:link outcome="students"    value="Students"/>
+        <h:outputText value=" | "/>
+        <h:link outcome="courses"     value="Courses"/>
+        <h:outputText value=" | "/>
+        <h:link outcome="enrollments" value="Enrollments"/>
+    </h:panelGroup>
+    <h:form id="enrollForm">
+        <!-- afișează erori/mesaje -->
+        <h:messages globalOnly="true" layout="table"/>
+
         <h3>Înscriere student → curs</h3>
-        <h:selectOneMenu value="#{enrollmentBean.selectedStudentId}">
-            <f:selectItem itemLabel="-- selectează student --" itemValue="" />
+        <h:selectOneMenu id="studentSelect" value="#{enrollmentBean.selectedStudentId}" required="true">
+            <f:selectItem itemLabel="-- selectează student --" itemValue="#{null}" />
             <f:selectItems value="#{enrollmentBean.students}" var="s"
                            itemValue="#{s.id}" itemLabel="#{s.name}" />
         </h:selectOneMenu>
-        <h:selectOneMenu value="#{enrollmentBean.selectedCourseId}">
-            <f:selectItem itemLabel="-- selectează curs --" itemValue="" />
+
+        <h:selectOneMenu id="courseSelect" value="#{enrollmentBean.selectedCourseId}" required="true">
+            <f:selectItem itemLabel="-- selectează curs --" itemValue="#{null}" />
             <f:selectItems value="#{enrollmentBean.courses}" var="c"
                            itemValue="#{c.id}" itemLabel="#{c.title}" />
         </h:selectOneMenu>
-        <h:commandButton value="Înscrie" action="#{enrollmentBean.enroll}" />
-    </h:form>
 
-    <h:dataTable value="#{enrollmentBean.enrollments}" var="e">
-        <h:column><f:facet name="header">Student</f:facet>#{e.student.name}</h:column>
-        <h:column><f:facet name="header">Curs</f:facet>#{e.course.title}</h:column>
-        <h:column>
-            <f:facet name="header">Actions</f:facet>
-            <h:commandButton value="Delete"
-                             action="#{enrollmentBean.delete(enrollment)}">
-                <f:ajax render="@form"/>
-            </h:commandButton>
-        </h:column>
-    </h:dataTable>
+        <h:commandButton value="Înscrie"
+                         action="#{enrollmentBean.enroll}"
+                         onclick="if (!confirm('Confirmi înscrierea?')) return false;">
+            <f:ajax execute="@form" render="@form enrollmentTable"/>
+        </h:commandButton>
+
+        <h:dataTable id="enrollmentTable"
+                     value="#{enrollmentBean.enrollments}" var="e"
+                     border="1" style="margin-top:1em">
+            <h:column>
+                <f:facet name="header">Student</f:facet>
+                #{e.student.name}
+            </h:column>
+            <h:column>
+                <f:facet name="header">Curs</f:facet>
+                #{e.course.title}
+            </h:column>
+            <h:column>
+                <f:facet name="header">Acțiuni</f:facet>
+                <h:commandButton value="Șterge"
+                                 action="#{enrollmentBean.delete(e.id)}"
+                                 onclick="if (!confirm('Ștergi această înscriere?')) return false;">
+                    <f:ajax execute="@this" render="@form enrollmentTable"/>
+                </h:commandButton>
+            </h:column>
+        </h:dataTable>
+    </h:form>
 </h:body>
 </html>

@@ -1,60 +1,66 @@
+// src/main/java/com/sicrieruionut/demo1/jsf/EnrollmentBean.java
 package com.sicrieruionut.demo1.jsf;
 
-import jakarta.inject.Named;
-import jakarta.faces.view.ViewScoped;
-import jakarta.ejb.EJB;
+import com.sicrieruionut.demo1.ejb.CourseService;
 import com.sicrieruionut.demo1.ejb.EnrollmentService;
 import com.sicrieruionut.demo1.ejb.StudentService;
-import com.sicrieruionut.demo1.ejb.CourseService;
-import com.sicrieruionut.demo1.model.Enrollment;
-import com.sicrieruionut.demo1.model.Student;
 import com.sicrieruionut.demo1.model.Course;
-import java.io.Serializable;
+import com.sicrieruionut.demo1.model.Enrollment;
+import com.sicrieruionut.demo1.model.EnrollmentId;
+import com.sicrieruionut.demo1.model.Student;
+import jakarta.annotation.PostConstruct;
+import jakarta.ejb.EJB;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Named;
 import java.util.List;
 
-@Named
-@ViewScoped
-public class EnrollmentBean implements Serializable {
-    private static final long serialVersionUID = 1L;
+@Named("enrollmentBean")
+@RequestScoped
+public class EnrollmentBean {
 
-    @EJB private EnrollmentService enrollSvc;
-    @EJB private StudentService studentSvc;
-    @EJB private CourseService courseSvc;
+    @EJB
+    private EnrollmentService enrollmentService;
+    @EJB
+    private StudentService   studentService;
+    @EJB
+    private CourseService    courseService;
+
+    private List<Enrollment> enrollments;
+    private List<Student>    students;
+    private List<Course>     courses;
 
     private Long selectedStudentId;
     private Long selectedCourseId;
-    private List<Enrollment> enrollments;
-    private List<Student> students;
-    private List<Course> courses;
 
-    public List<Enrollment> getEnrollments() {
-        if (enrollments == null) enrollments = enrollSvc.listAll();
-        return enrollments;
+    @PostConstruct
+    public void init() {
+        enrollments = enrollmentService.listAll();
+        students    = studentService.findAll();
+        courses     = courseService.findAll();
     }
-    public List<Student> getStudents() {
-        if (students == null) students = studentSvc.listAll();
-        return students;
-    }
-    public List<Course> getCourses() {
-        if (courses == null) courses = courseSvc.listAll();
-        return courses;
-    }
+
+    public List<Enrollment> getEnrollments() { return enrollments; }
+    public List<Student>    getStudents()    { return students;    }
+    public List<Course>     getCourses()     { return courses;     }
+
+    public Long getSelectedStudentId()       { return selectedStudentId; }
+    public void setSelectedStudentId(Long id){ this.selectedStudentId = id; }
+
+    public Long getSelectedCourseId()        { return selectedCourseId; }
+    public void setSelectedCourseId(Long id) { this.selectedCourseId = id; }
 
     public void enroll() {
-        Student s = studentSvc.find(selectedStudentId);
-        Course c = courseSvc.find(selectedCourseId);
-        enrollSvc.create(new Enrollment(s, c));
-        enrollments = enrollSvc.listAll();
+        if (selectedStudentId != null && selectedCourseId != null) {
+            enrollmentService.createEnrollment(selectedStudentId, selectedCourseId);
+            // reîncarcă lista și resetează selecțiile
+            enrollments       = enrollmentService.listAll();
+            selectedStudentId = null;
+            selectedCourseId  = null;
+        }
     }
 
-    public void delete(com.sicrieruionut.demo1.model.EnrollmentId id) {
-        enrollSvc.delete(id);
-        enrollments = enrollSvc.listAll();
+    public void delete(EnrollmentId id) {
+        enrollmentService.deleteEnrollment(id);
+        enrollments = enrollmentService.listAll();
     }
-
-    // getters & setters for selectedStudentId/CourseId
-    public Long getSelectedStudentId() { return selectedStudentId; }
-    public void setSelectedStudentId(Long id) { this.selectedStudentId = id; }
-    public Long getSelectedCourseId() { return selectedCourseId; }
-    public void setSelectedCourseId(Long id) { this.selectedCourseId = id; }
 }

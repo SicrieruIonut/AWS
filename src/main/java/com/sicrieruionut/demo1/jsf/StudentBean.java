@@ -1,63 +1,53 @@
+// src/main/java/com/sicrieruionut/demo1/jsf/StudentBean.java
 package com.sicrieruionut.demo1.jsf;
 
-import jakarta.inject.Named;
-import jakarta.faces.view.ViewScoped;
-import jakarta.ejb.EJB;
 import com.sicrieruionut.demo1.ejb.StudentService;
 import com.sicrieruionut.demo1.model.Student;
-
-import java.io.Serializable;
+import jakarta.annotation.PostConstruct;
+import jakarta.ejb.EJB;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Named;
 import java.util.List;
 
 @Named
-@ViewScoped
-public class StudentBean implements Serializable {
-    private static final long serialVersionUID = 1L;
+@RequestScoped
+public class StudentBean {
 
     @EJB
-    private StudentService svc;
+    private StudentService service;
 
-    private Student student = new Student();
     private List<Student> students;
+    private Student student = new Student();
 
-    // Încarcă lista de studenți
-    public void loadAll() {
-        students = svc.listAll();
+    @PostConstruct
+    public void init() {
+        students = service.findAll();
     }
 
-    // Creează un student nou și reîncarcă lista
-    public void create() {
-        svc.create(student);
-        student = new Student();
-        loadAll();
-    }
-
-    // Actualizează un student și reîncarcă lista
-    public void update(Student s) {
-        svc.update(s);
-        loadAll();
-    }
-
-    // Șterge după id și reîncarcă lista
-    public void delete(Long id) {
-        svc.delete(id);
-        loadAll();
-    }
-
-    // Lazy-loading: dacă nu e încărcată, o încarcă
     public List<Student> getStudents() {
-        if (students == null) {
-            loadAll();
-        }
         return students;
     }
 
-    // Getters & Setters pentru binding JSF
     public Student getStudent() {
         return student;
     }
-
     public void setStudent(Student student) {
         this.student = student;
+    }
+
+    public void create() {
+        service.createStudent(student);
+        students = service.findAll();
+        student = new Student();
+    }
+
+    public void update(Student s) {
+        service.updateStudent(s);
+        students = service.findAll();
+    }
+
+    public void delete(Long id) {
+        service.deleteStudent(id);
+        students.removeIf(x -> x.getId().equals(id));
     }
 }
